@@ -13,12 +13,12 @@ export const authOptions = {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
-    // X
+    // X 나중에 할거
     NaverProvider({
       clientId: process.env.NAVER_CLIENT_ID,
       clientSecret: process.env.NAVER_CLIENT_SECRET,
     }),
-    // X
+    // X 나중에 할거
     CredentialsProvider({
       name: "Credentials",
       credentials: {
