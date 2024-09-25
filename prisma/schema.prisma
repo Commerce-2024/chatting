@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model tbl_friend {
+  friend_id Int       @id @default(autoincrement())
+  user_no   Int?
+  firend_no Int?
+  tbl_user  tbl_user? @relation(fields: [user_no], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_1")
+
+  @@index([user_no], map: "user_no")
+}
+
+model tbl_message {
+  message_no   Int       @id @default(autoincrement())
+  user_id      Int?
+  room_id      Int?
+  message_body String?   @db.VarChar(255)
+  message_type String?   @db.VarChar(10)
+  tbl_user     tbl_user? @relation(fields: [user_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_message_ibfk_1")
+  tbl_room     tbl_room? @relation(fields: [room_id], references: [room_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_message_ibfk_2")
+
+  @@index([room_id], map: "room_id")
+  @@index([user_id], map: "user_id")
+}
+
+model tbl_room {
+  room_no       Int             @id @default(autoincrement())
+  room_name     String?         @db.VarChar(100)
+  room_status   String?         @db.VarChar(10)
+  tbl_message   tbl_message[]
+  tbl_room_join tbl_room_join[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model tbl_room_join {
+  join_id  Int       @id @default(autoincrement())
+  user_id  Int?
+  room_id  Int?
+  tbl_user tbl_user? @relation(fields: [user_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_room_join_ibfk_1")
+  tbl_room tbl_room? @relation(fields: [room_id], references: [room_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_room_join_ibfk_2")
+
+  @@index([room_id], map: "room_id")
+  @@index([user_id], map: "user_id")
+}
+
+model tbl_user {
+  user_no       Int             @id @default(autoincrement())
+  user_id       String          @unique(map: "user_id") @db.VarChar(100)
+  user_password String          @db.VarChar(100)
+  user_name     String          @db.VarChar(100)
+  user_birth    String          @db.VarChar(50)
+  tbl_friend    tbl_friend[]
+  tbl_message   tbl_message[]
+  tbl_room_join tbl_room_join[]
+}
