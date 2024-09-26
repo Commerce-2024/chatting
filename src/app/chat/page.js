@@ -60,7 +60,6 @@ const ChatPage = () => {
         <div>
           <TextField
             name="name"
-            onChange={(e) => onTextChange(e)}
             value={(state.name = session.user.name)}
             label="Name"
           />

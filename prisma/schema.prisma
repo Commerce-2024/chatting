@@ -9,12 +9,12 @@ datasource db {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model tbl_friend {
-  friend_id Int       @id @default(autoincrement())
-  user_no   Int?
-  firend_no Int?
-  tbl_user  tbl_user? @relation(fields: [user_no], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_1")
+  friend_no Int       @id @default(autoincrement())
+  user_id   String?   @db.VarChar(100)
+  friend_id String?   @db.VarChar(100)
+  tbl_user  tbl_user? @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_1")
 
-  @@index([user_no], map: "user_no")
+  @@index([user_id], map: "user_id")
 }
 
 model tbl_message {
