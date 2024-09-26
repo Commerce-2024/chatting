@@ -8,11 +8,6 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 export const authOptions = {
-  session: {
-    strategy: "jwt", // JWT 사용 (기본값이지만 명시적으로 설정)
-    maxAge: 30 * 24 * 60, // 30일 (초 단위)
-  },
-
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
@@ -25,6 +20,10 @@ export const authOptions = {
     }),
     // X 나중에 할거
     CredentialsProvider({
+      session: {
+        strategy: "jwt",
+        maxAge: 30 * 24 * 60 * 60, // 30 days in seconds
+      },
       name: "Credentials",
       credentials: {
         loginId: { label: "Login ID", type: "text", placeholder: "ID" },
@@ -79,7 +78,6 @@ export const authOptions = {
         session.user.name = user.user_name;
         session.user.birth = user.user_birth;
       }
-
       return session;
     },
   },

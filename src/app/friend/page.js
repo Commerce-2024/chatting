@@ -28,6 +28,7 @@ const FriendPage = () => {
       const fetchFriends = async () => {
         try {
           const friendsData = await friendSelectByUserId(session.user.id); // 사용자 ID를 함수에 전달
+          console.log("프렌드데이터 넘어왔나?", friendsData);
           setFriends(friendsData);
         } catch (error) {
           setErrorMessage("친구 목록을 불러오는 중 오류");
