@@ -4,7 +4,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 export async function POST(request) {
-  const { friendName } = await request.json();
+  const { id, friendName } = await request.json();
 
   try {
     //존재 하는 회원 확인
@@ -20,6 +20,7 @@ export async function POST(request) {
     //친구추가
     const friend = await prisma.tbl_friend.create({
       data: {
+        user_id: id,
         friend_id: friendName,
       },
     });
@@ -32,6 +33,7 @@ export async function POST(request) {
     return NextResponse.json(
       { message: "친구추가중 오류가 발생했습니다.", error },
       { status: 500 }
+      //에러발생
     );
   }
 }

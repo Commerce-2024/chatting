@@ -60,5 +60,5 @@ npx prisma init --datasource-provider mysql
 
 ```bash
 npx prisma db pull
-npx prisma generator
+npx prisma generate
 ```
