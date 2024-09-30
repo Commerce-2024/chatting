@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
-import { friendSelectByUserId } from "../api/friend/friend";
+import { friendSelectAll } from "../api/friend/friend";
 
 const FriendPage = () => {
   const [formData, setFormData] = useState({
@@ -27,18 +27,17 @@ const FriendPage = () => {
       // 친구 목록 가져오기
       const fetchFriends = async () => {
         try {
-          const friendsData = await friendSelectByUserId(session.user.id); // 사용자 ID를 함수에 전달
-          console.log("프렌드데이터 넘어왔나?", friendsData);
+          const friendsData = await friendSelectAll(); // 사용자 ID를 함수에 전달
+          console.log(friendsData);
           setFriends(friendsData);
         } catch (error) {
+          console.log(error);
           setErrorMessage("친구 목록을 불러오는 중 오류");
         }
       };
-
       fetchFriends();
     }
   }, [session, status]);
-
   const friendList = friends.map((friend) => (
     <li key={friend.id}>{friend.id}</li> // key prop 추가
   ));
