@@ -11,12 +11,17 @@ const Nav = () => {
       <li>
         {session ? (
           <Link href="#" onClick={() => signOut()}>
-            로그아웃({session.user.id})
+            로그아웃
           </Link>
         ) : (
           <Link href="/api/auth/signin">로그인</Link>
         )}
       </li>
+      {session && (
+        <li>
+          <Link href="/user/info">mypage({session.user.id})</Link>
+        </li>
+      )}
       {session && (
         <li>
           {" "}

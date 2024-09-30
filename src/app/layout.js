@@ -7,7 +7,9 @@ const RootLayout = ({ children }) => {
       <AuthProvider>
         <body>
           <header>
-            <h1>Chatting</h1>
+            <Link href="/">
+              <h1>Chatting</h1>
+            </Link>
             <p>채팅프로젝트</p>
           </header>
           <Nav />

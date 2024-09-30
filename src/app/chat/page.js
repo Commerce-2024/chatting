@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
 import { TextField } from "@material-ui/core";
 import { useSession } from "next-auth/react";
-
+import Link from "next/link";
 const socket = io.connect("http://localhost:4000"); //서버 연결
 const ChatPage = () => {
   const { data: session } = useSession();
@@ -55,9 +55,9 @@ const ChatPage = () => {
 
   return (
     <div className="card">
+      <h1>Messenger</h1>
+      <Link href="/room/create">채팅방만들러가기</Link>
       <form onSubmit={onMessageSubmit}>
-        <h1>Messenger</h1>
-        <link href="room">채팅방보러가기</link>
         <div>
           <TextField
             name="name"
