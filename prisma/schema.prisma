@@ -9,14 +9,14 @@ datasource db {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model tbl_friend {
-  id                                      Int       @id @default(autoincrement())
-  user_id                                 Int?
-  friend_id                               Int?
-  tbl_user                                tbl_user? @relation(fields: [user_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_1")
-  tbl_user_tbl_friend_friend_idTotbl_user tbl_user? @relation("tbl_friend_friend_idTotbl_user", fields: [friend_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_2")
+  friend_no                               Int       @id @default(autoincrement())
+  user_id                                 String?   @db.VarChar(100)
+  friend_id                               String?   @db.VarChar(100)
+  tbl_user                                tbl_user? @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_1")
+  tbl_user_tbl_friend_friend_idTotbl_user tbl_user? @relation("tbl_friend_friend_idTotbl_user", fields: [friend_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction, map: "tbl_friend_ibfk_2")
 
   @@unique([user_id, friend_id], map: "user_id")
-  @@index([friend_id], map: "friend_id_idx")
+  @@index([friend_id], map: "friend_id")
 }
 
 model tbl_message {
@@ -28,8 +28,8 @@ model tbl_message {
   tbl_user     tbl_user? @relation(fields: [user_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_message_ibfk_1")
   tbl_room     tbl_room? @relation(fields: [room_id], references: [room_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_message_ibfk_2")
 
-  @@index([room_id], map: "room_id_idx")
-  @@index([user_id], map: "user_id_idx")
+  @@index([room_id], map: "room_id")
+  @@index([user_id], map: "user_id")
 }
 
 model tbl_room {
@@ -42,22 +42,22 @@ model tbl_room {
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model tbl_room_join {
-  id       Int       @id @default(autoincrement())
+  join_id  Int       @id @default(autoincrement())
   user_id  Int?
   room_id  Int?
   tbl_user tbl_user? @relation(fields: [user_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_room_join_ibfk_1")
   tbl_room tbl_room? @relation(fields: [room_id], references: [room_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_room_join_ibfk_2")
 
-  @@unique([user_id, room_id], map: "user_id")
-  @@index([room_id], map: "room_id_idx")
+  @@index([room_id], map: "room_id")
+  @@index([user_id], map: "user_id")
 }
 
 model tbl_user {
   user_no                                   Int             @id @default(autoincrement())
-  user_id                                   String?         @unique(map: "user_id") @db.VarChar(100)
-  user_password                             String?         @db.VarChar(100)
-  user_name                                 String?         @db.VarChar(100)
-  user_birth                                String?         @db.VarChar(50)
+  user_id                                   String          @unique(map: "user_id") @db.VarChar(100)
+  user_password                             String          @db.VarChar(100)
+  user_name                                 String          @db.VarChar(100)
+  user_birth                                String          @db.VarChar(50)
   tbl_friend                                tbl_friend[]
   tbl_friend_tbl_friend_friend_idTotbl_user tbl_friend[]    @relation("tbl_friend_friend_idTotbl_user")
   tbl_message                               tbl_message[]
