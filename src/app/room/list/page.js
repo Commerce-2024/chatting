@@ -57,6 +57,11 @@ const RoomListPage = () => {
             key={room.room_no}
             onClick={() => handleRoomClick(room.room_no, session.user.id)}
           >
+            <button
+              onClick={() => handleRoomClick(room.room_no, session.user.id)}
+            >
+              참가
+            </button>
             {room.room_name} ({room.room_status})
           </li>
         ))}
