@@ -1,12 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 const RoomListPage = () => {
   const [rooms, setRooms] = useState([]);
+  const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter;
-  //방목록을 가져오기 아직 자기아이디에 해당하는 방목록을 가져오는건 안됨
+  const { data: session } = useSession();
+  const router = useRouter(); // useRouter를 함수로 호출
+
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -19,32 +21,42 @@ const RoomListPage = () => {
     };
     fetchRooms();
   }, []);
-  const handleRoomClick = async (room_no) => {
+
+  const handleRoomClick = async (room_no, user_id) => {
     try {
-      const response = await fetch(`/api/room/join/${room_no}`, {
-        method: "POST", // POST 요청으로 변경
-      });
+      const response = await fetch(
+        `/api/room/join?room_no=${room_no}&user_id=${user_id}`,
+        {
+          method: "POST", // POST 요청으로 변경
+        }
+      );
       console.log(response);
 
       if (response.ok) {
         // 방 참가 성공 시 페이지 이동
-        router.push(`/chatRoom/${room_no}`);
+        setSuccessMessage("성공");
+        // router.push(`/chatRoom/${room_no}`);
       } else {
         // 에러 처리
         const data = await response.json();
-        setErrorMessage(data.message || "실패");
+        setErrorMessage(data.message || "실패.");
       }
     } catch (error) {
       setErrorMessage("방 참가에 실패했습니다.");
     }
   };
+
   return (
     <div>
       <h1>Room List Page</h1>
+      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       <ul>
         {rooms.map((room) => (
-          <li key={room.room_no} onClick={() => handleRoomClick(room.room_no)}>
+          <li
+            key={room.room_no}
+            onClick={() => handleRoomClick(room.room_no, session.user.id)}
+          >
             {room.room_name} ({room.room_status})
           </li>
         ))}
@@ -52,4 +64,5 @@ const RoomListPage = () => {
     </div>
   );
 };
+
 export default RoomListPage;

@@ -38,17 +38,21 @@ export async function getRooms(request) {
   }
 }
 // 방 참가 클릭 함수
-export async function POST(request, { params }) {
+export async function joinRoom(request) {
   // POST 요청 처리
-  const { room_no } = params;
+  const { searchParams } = new URL(request.url);
+  const room_no = searchParams.get("room_no");
+  const user_id = searchParams.get("user_id");
+  console.log("Room No:", room_no, "User ID:", user_id);
 
   try {
     // 해당 방이 존재하는지 확인
     const room = await prisma.tbl_room.findUnique({
       where: {
-        room_no: Number(room_no), // Number() 함수 사용
+        room_no: Number(room_no),
       },
     });
+
     if (!room) {
       return NextResponse.json(
         { message: "존재하지 않는 방입니다." },
@@ -56,14 +60,23 @@ export async function POST(request, { params }) {
       );
     }
 
+    // 방 참가 정보 저장
+    await prisma.tbl_room_join.create({
+      data: {
+        room_id: Number(room_no), // room_no를 room_id로 사용
+        user_id: user_id, // 여기서 user_id를 사용
+      },
+    });
+
     // 방 참가 성공 메시지 반환
     return NextResponse.json(
       { message: "방에 성공적으로 참가하였습니다." },
       { status: 200 }
     );
   } catch (error) {
+    console.error(error); // 에러 로그 추가
     return NextResponse.json(
-      { message: "방 참가 중 오류가 발생했습니다." }, // 에러 메시지 단순화
+      { message: "방 참가 중 오류가 발생했습니다." },
       { status: 500 }
     );
   }
