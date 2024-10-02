@@ -9,6 +9,7 @@ const CreateRoomPage = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
+  // 입력
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -17,27 +18,23 @@ const CreateRoomPage = () => {
     }));
     clearMessages();
   };
-
+  //새로 입력할때마다 에러메세지를 초기화
   const clearMessages = () => {
     setErrorMessage("");
     setSuccessMessage("");
   };
-
   const validate = async () => {
     const { title, status } = formData;
-
     if (!title) {
       setErrorMessage("제목을 입력하세요");
       return;
     }
-
     if (!status) {
       setErrorMessage("옵션을 선택하세요");
       return;
     }
-
     try {
-      const response = await fetch("/api/room", {
+      const response = await fetch("/api/room/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

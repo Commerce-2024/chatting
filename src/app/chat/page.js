@@ -57,6 +57,8 @@ const ChatPage = () => {
     <div className="card">
       <h1>Messenger</h1>
       <Link href="/room/create">채팅방만들러가기</Link>
+      <br />
+      <Link href="/room/list">채팅방목록보러가기</Link>
       <form onSubmit={onMessageSubmit}>
         <div>
           <TextField
