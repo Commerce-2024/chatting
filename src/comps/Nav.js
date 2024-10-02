@@ -30,7 +30,7 @@ const Nav = () => {
       )}
       {session && (
         <li>
-          <Link href="/chat">message</Link>
+          <Link href="/chat/public">message</Link>
         </li>
       )}
     </ul>

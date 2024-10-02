@@ -32,22 +32,21 @@ model tbl_message {
 }
 
 model tbl_room {
-  room_no       Int             @id @default(autoincrement())
-  room_name     String?         @db.VarChar(100)
-  room_status   String?         @db.VarChar(10)
+  room_no       Int            @id @default(autoincrement())
+  room_name     String?        @db.VarChar(100)
+  room_status   String?        @db.VarChar(10)
   tbl_message   tbl_message[]
-  tbl_room_join tbl_room_join[]
+  tbl_room_join tbl_room_join?
 }
 
 /// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
 model tbl_room_join {
   join_id  Int       @id @default(autoincrement())
   user_id  Int?
-  room_id  Int?
+  room_id  Int?      @unique(map: "room_id")
   tbl_user tbl_user? @relation(fields: [user_id], references: [user_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_room_join_ibfk_1")
   tbl_room tbl_room? @relation(fields: [room_id], references: [room_no], onDelete: Cascade, onUpdate: NoAction, map: "tbl_room_join_ibfk_2")
 
-  @@index([room_id], map: "room_id")
   @@index([user_id], map: "user_id")
 }
 

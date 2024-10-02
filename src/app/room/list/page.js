@@ -28,7 +28,7 @@ const RoomListPage = () => {
 
       if (response.ok) {
         // 방 참가 성공 시 페이지 이동
-        router.push(`/room/${room_no}`);
+        router.push(`/chatRoom/${room_no}`);
       } else {
         // 에러 처리
         const data = await response.json();
