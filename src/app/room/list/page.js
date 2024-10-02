@@ -34,7 +34,7 @@ const RoomListPage = () => {
 
       if (response.ok) {
         // 방 참가 성공 시 페이지 이동
-        setSuccessMessage("성공");
+        router.push(`/chat/chatRoom/${room_no}`);
         // router.push(`/chatRoom/${room_no}`);
       } else {
         // 에러 처리
@@ -53,10 +53,7 @@ const RoomListPage = () => {
       {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
       <ul>
         {rooms.map((room) => (
-          <li
-            key={room.room_no}
-            onClick={() => handleRoomClick(room.room_no, session.user.id)}
-          >
+          <li key={room.room_no}>
             <button
               onClick={() => handleRoomClick(room.room_no, session.user.id)}
             >
