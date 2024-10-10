@@ -68,7 +68,9 @@ export async function joinRoom(request) {
         user_id: user_id, // 여기서 user_id를 사용
       },
     });
-
+    await prisma.tbl_message.create({
+      user_id,
+    });
     // 방 참가 성공 메시지 반환
     return NextResponse.json(
       { message: "방에 성공적으로 참가하였습니다." },

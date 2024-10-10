@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 
 const ChatRoomPage = () => {
   const { room_no } = useParams(); // useParams로 room_no 가져옴
+  const [roomInfo, setRoomInfo] = useState(null);
   const [roomData, setRoomData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [chat, setChat] = useState([]);
