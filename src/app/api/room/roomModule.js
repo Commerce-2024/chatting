@@ -1,3 +1,4 @@
+import { pink } from "@material-ui/core/colors";
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 
@@ -77,6 +78,30 @@ export async function joinRoom(request) {
     console.error(error); // 에러 로그 추가
     return NextResponse.json(
       { message: "방 참가 중 오류가 발생했습니다." },
+      { status: 500 }
+    );
+  }
+}
+//채팅방 채팅내역 조회 함수
+export async function chatRog(request) {
+  //POST 요청 처리
+  const { searchParams } = new URL(request.url);
+  const room_no = searchParams.get("room_no");
+  try {
+    const chatRog = await prisma.tbl_message.findMany({
+      where: {
+        room_id: Number(room_no), //room_id임 이테이블은
+      },
+    });
+    if (chatRog.message_body === "") {
+      {
+        return NextResponse.json({ message: "채팅내역이 없음" });
+      }
+    }
+    return NextResponse.json(chatRog);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "채팅 내역을 불러오는 중 오류가 발생했습니다.", error },
       { status: 500 }
     );
   }
