@@ -69,8 +69,13 @@ export async function joinRoom(request) {
       },
     });
     await prisma.tbl_message.create({
-      data: {},
-    }); //여기 message 초기 메세지를 삽입해서 방장을 설정하고 흠..일단 여기해야됨
+      data: {
+        user_id: user_id,
+        room_id: Number(room_no),
+        message_body: "시작", //일단 처음메세지
+        message_type: "1", //type은 나중에 설정
+      },
+    }); //여기 message 초기 메세지를 삽입
     // 방 참가 성공 메시지 반환
     return NextResponse.json(
       { message: "방에 성공적으로 참가하였습니다." },

@@ -10,14 +10,19 @@ const ChatRoomPage = () => {
   const [roomInfo, setRoomInfo] = useState(null);
   const [roomData, setRoomData] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const [chat, setChat] = useState([]);
-  const [state, setState] = useState({ message: "", name: "", type: "" });
+  const [state, setState] = useState({
+    user_id: "",
+    room_id: "",
+    message_body: "",
+    message_type: "",
+  }); //message
+  const [chat, setChat] = useState([]); // chat 상태를 저장
   const { data: session } = useSession();
   const socketRef = useRef();
   useEffect(() => {
     socketRef.current = io.connect("http://localhost:4000");
-    socketRef.current.on("message", ({ name, message }) => {
-      setChat([...chat, { name, message }]);
+    socketRef.current.on("message", ({ message_body, message_type }) => {
+      setChat([...chat, { message_body, message_type }]);
     });
     if (room_no) {
       const fetchRoomData = async () => {
@@ -40,7 +45,7 @@ const ChatRoomPage = () => {
       fetchRoomData();
     }
     return () => socketRef.current.disconnect();
-  }, [room_no, chat]);
+  }, [room_no, chat]); //연결종료
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -49,25 +54,37 @@ const ChatRoomPage = () => {
   if (!roomData) {
     return <div>Loading...</div>;
   }
+  //텍스트 입력처리
   const onTextChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
+  //메시지 전송 처리
   const onMessageSubmit = (e) => {
-    const { name, message, type } = state;
-    socketRef.current.emit("message", { name, message, type });
-    e.preventDefault();
-    setState({ message: "", name: "" }); //메시지 입력 필드와 이름 필드 초기화
+    const { user_id, room_id, message_body, messgae_type } = state;
+    socketRef.current.emit("message", {
+      user_id,
+      room_id,
+      message_body,
+      messgae_type,
+    });
+    e.preventDefault(); //폼의 기본 제출 동작을 막아 페이지 새로고침 방지
+    setState({
+      user_id: session.user.id,
+      room_id: room_no,
+      message_body: "",
+      messgae_type: "",
+    }); //메시지 입력 필드와 이름 필드 초기화
   };
   //-------------채팅 로그 렌더링---------------
   const renderChat = () => {
     return chat.map(
       (
-        { name, message },
+        { user_id, message_body },
         index //chat 상태 배열을 순회하며 각 메시지를 렌더링 key={index}:React에서 리스트를 렌더링할 때 각 항목에 고유한 key 를 제공
       ) => (
         <div key={index}>
           <h3>
-            {name}: <span>{message}</span>
+            {user_id}: <span>{message_body}</span>
           </h3>
         </div>
       )
@@ -76,7 +93,7 @@ const ChatRoomPage = () => {
   return (
     <div>
       <h1>room_id: {roomData.room_id}</h1>
-      <p>user_id: {roomData.user_id}</p>
+      <p>참가인원: {roomData.user_id}</p>
       <form onSubmit={onMessageSubmit}>
         <div>
           <TextField
@@ -89,7 +106,7 @@ const ChatRoomPage = () => {
           <TextField
             name="message"
             onChange={(e) => onTextChange(e)}
-            value={state.message}
+            value={state.message_body}
             id="outlined-multiline-static"
             variant="outlined"
             label="Message"
