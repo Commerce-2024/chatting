@@ -12,21 +12,6 @@ const FriendPage = () => {
   const { data: session, status } = useSession();
   const [friends, setFriends] = useState([]);
 
-  useEffect(() => {
-    // 세션 상태가 변경될 때마다 확인
-    if (status === "unauthenticated") {
-      signIn();
-    } else if (status === "authenticated" && session?.user?.id) {
-      // 로그인된 경우 사용자 ID 업데이트
-      setFormData((prevData) => ({
-        ...prevData,
-        id: session.user.id,
-      }));
-      // 친구 목록 불러오기
-      fetchFriends();
-    }
-  }, [session, status]);
-
   // 친구목록 불러오기
   const fetchFriends = async () => {
     try {
@@ -42,6 +27,20 @@ const FriendPage = () => {
       setErrorMessage("친구 목록을 불러오는 중 오류가 발생했습니다.");
     }
   };
+  useEffect(() => {
+    // 세션 상태가 변경될 때마다 확인
+    if (status === "unauthenticated") {
+      signIn();
+    } else if (status === "authenticated" && session?.user?.id) {
+      // 로그인된 경우 사용자 ID 업데이트
+      setFormData((prevData) => ({
+        ...prevData,
+        id: session.user.id,
+      }));
+      // 친구 목록 불러오기
+      fetchFriends();
+    }
+  }, [session, status]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

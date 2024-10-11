@@ -21,9 +21,12 @@ const ChatRoomPage = () => {
   const socketRef = useRef();
   useEffect(() => {
     socketRef.current = io.connect("http://localhost:4000");
-    socketRef.current.on("message", ({ message_body, message_type }) => {
-      setChat([...chat, { message_body, message_type }]);
-    });
+    socketRef.current.on(
+      "message",
+      ({ user_id, room_id, message_body, message_type }) => {
+        setChat([...chat, { user_id, room_id, message_body, message_type }]);
+      }
+    );
     if (room_no) {
       const fetchRoomData = async () => {
         try {
@@ -97,14 +100,14 @@ const ChatRoomPage = () => {
       <form onSubmit={onMessageSubmit}>
         <div>
           <TextField
-            name="name"
+            name="user_id"
             value={(state.name = session.user.name)}
             label="Name"
           />
         </div>
         <div>
           <TextField
-            name="message"
+            name="message_body"
             onChange={(e) => onTextChange(e)}
             value={state.message_body}
             id="outlined-multiline-static"
