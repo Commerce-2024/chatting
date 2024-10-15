@@ -12,7 +12,6 @@ const RootLayout = ({ children }) => {
             <Link href="/">
               <h1>Chatting</h1>
             </Link>
-            <p>채팅프로젝트</p>
           </header>
           <Nav className="nav" />
           {children}

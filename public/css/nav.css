@@ -1,0 +1,28 @@
+/* nav.css */
+.nav-container ul {
+  list-style: none; /* 기본 리스트 스타일 제거 */
+  padding: 0;
+  margin: 0;
+  display: flex; /* 가로로 펼치기 */
+  justify-content: center; /* 중앙 정렬 */
+  gap: 20px; /* 각 아이템 사이 간격 */
+  margin-bottom: 10px;
+}
+
+.nav-container li {
+  margin: 0;
+}
+
+.nav-container a {
+  text-decoration: none;
+  color: #333;
+  padding: 5px 10px;
+  border-radius: 3px;
+  background-color: #f0f0f0;
+  transition: background-color 0.3s;
+  margin-bottom: 5px;
+}
+
+.nav-container a:hover {
+  background-color: #ddd; /* 호버 시 배경색 변경 */
+}

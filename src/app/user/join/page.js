@@ -1,4 +1,5 @@
 "use client";
+import "../../../../public/css/join.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -92,7 +93,7 @@ const JoinPage = () => {
 
   return (
     <>
-      <section>
+      <section className="signup-form">
         <input
           id="user_id"
           name="id"

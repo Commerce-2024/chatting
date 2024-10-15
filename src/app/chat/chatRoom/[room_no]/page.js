@@ -1,4 +1,5 @@
 "use client";
+import "../../../../../public/css/roomChat.css";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { useParams, useRouter } from "next/navigation"; // useParams 사용
@@ -7,26 +8,19 @@ import { useSession } from "next-auth/react";
 
 const ChatRoomPage = () => {
   const { room_no } = useParams(); // useParams로 room_no 가져옴
-  const [roomInfo, setRoomInfo] = useState(null);
-  const [roomData, setRoomData] = useState(null);
-  const [errorMessage, setErrorMessage] = useState("");
-  const [state, setState] = useState({
-    user_id: "",
-    room_id: "",
-    message_body: "",
-    message_type: "",
-  }); //message
+  const [errorMessage, setErrorMessage] = useState(""); //에러메세지
+  const [roomData, setRoomData] = useState(null); //방정보
+  const [state, setState] = useState({ name: "", message_body: "" }); //message정보저장
   const [chat, setChat] = useState([]); // chat 상태를 저장
-  const { data: session } = useSession();
-  const socketRef = useRef();
+  const { data: session } = useSession(); //로그인세션
+  const socketRef = useRef(); //ref
+  //---------작동----
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:4000");
-    socketRef.current.on(
-      "message",
-      ({ user_id, room_id, message_body, message_type }) => {
-        setChat([...chat, { user_id, room_id, message_body, message_type }]);
-      }
-    );
+    socketRef.current = io.connect("http://localhost:4000"); //서버연결
+    socketRef.current.on("message", ({ name, message_body }) => {
+      //user_id,room_id,message_body,message_type
+      setChat([...chat, { name, message_body }]); //name과 message를 받아와 chat 상태에 추가하여 채팅 로그를 업데이트
+    });
     if (room_no) {
       const fetchRoomData = async () => {
         try {
@@ -48,7 +42,8 @@ const ChatRoomPage = () => {
       fetchRoomData();
     }
     return () => socketRef.current.disconnect();
-  }, [room_no, chat]); //연결종료
+  }, [chat]); //연결종료
+  console.log("roomData", roomData);
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -63,44 +58,30 @@ const ChatRoomPage = () => {
   };
   //메시지 전송 처리
   const onMessageSubmit = (e) => {
-    const { user_id, room_id, message_body, messgae_type } = state;
-    socketRef.current.emit("message", {
-      user_id,
-      room_id,
-      message_body,
-      messgae_type,
-    });
+    const { name, message_body } = state;
+    socketRef.current.emit("message", { name, message_body });
     e.preventDefault(); //폼의 기본 제출 동작을 막아 페이지 새로고침 방지
-    setState({
-      user_id: session.user.id,
-      room_id: room_no,
-      message_body: "",
-      messgae_type: "",
-    }); //메시지 입력 필드와 이름 필드 초기화
+    setState({ message_body: "", name }); //메시지 입력 필드와 이름 필드 초기화
+    console.log("메세지", state);
   };
   //-------------채팅 로그 렌더링---------------
   const renderChat = () => {
-    return chat.map(
-      (
-        { user_id, message_body },
-        index //chat 상태 배열을 순회하며 각 메시지를 렌더링 key={index}:React에서 리스트를 렌더링할 때 각 항목에 고유한 key 를 제공
-      ) => (
-        <div key={index}>
-          <h3>
-            {user_id}: <span>{message_body}</span>
-          </h3>
-        </div>
-      )
-    );
+    return chat.map(({ name, message_body }, index) => (
+      <div key={index}>
+        <h3>
+          {name}: <span>{message_body}</span>
+        </h3>
+      </div>
+    ));
   };
   return (
-    <div>
-      <h1>room_id: {roomData.room_id}</h1>
-      <p>참가인원: {roomData.user_id}</p>
-      <form onSubmit={onMessageSubmit}>
+    <div className="room-container">
+      <p className="participant-count">참가 인원: {roomData.user_id}</p>
+      <form onSubmit={onMessageSubmit} className="message-form">
         <div>
           <TextField
-            name="user_id"
+            name="name"
+            className="text-field"
             value={(state.name = session.user.name)}
             label="Name"
           />
@@ -113,15 +94,25 @@ const ChatRoomPage = () => {
             id="outlined-multiline-static"
             variant="outlined"
             label="Message"
+            className="text-field"
           />
         </div>
-        <button>Send Message</button>
+        <button className="send-button">Send Message</button>
       </form>
       <div>
-        <h1>Chat Log</h1>
+        <h1 className="chat-log-title">Chat Log</h1>
+        <ul>
+          {roomData.map((message) => (
+            <li key={message.message_no} className="message-log">
+              {message.user_id},{message.message_body}
+            </li>
+          ))}
+        </ul>
         {renderChat()}
       </div>
-      <button onClick={() => router.push("/chat")}>뒤로가기</button>
+      <button className="back-button" onClick={() => router.push("/chat")}>
+        뒤로가기
+      </button>
     </div>
   );
 };

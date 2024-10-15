@@ -1,0 +1,52 @@
+/* chat.css */
+
+/* 카드 스타일 */
+.chat-card {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.link-button {
+  color: #4caf50;
+  text-decoration: none;
+  font-size: 16px;
+  margin: 10px 0;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+.chat-form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.text-field {
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.send-button {
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.send-button:hover {
+  background-color: #45a049;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 10px 0;
+}

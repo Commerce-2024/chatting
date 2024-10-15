@@ -1,4 +1,5 @@
 "use client";
+import "../../../public/css/friend.css";
 import { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 
@@ -91,27 +92,30 @@ const FriendPage = () => {
 
   return (
     <>
-      <h1>FriendPage</h1>
-      {session && <p>{session.user.name}님의 친구목록</p>}
-      <ul>
+      <h1 className="friend-page-title">FriendPage</h1>
+      {session && (
+        <p className="friend-list-header">{session.user.name}님의 친구 목록</p>
+      )}
+      <ul className="friend-list">
         {friends.map((f) => (
-          <li key={f.user_id}>
+          <li key={f.user_id} className="friend-item">
             <span>{f.friend_id}</span>
           </li>
         ))}
       </ul>
 
-      <section>
+      <section className="add-friend-section">
         <input
           id="friend_id"
           name="friendName"
+          className="friend-input"
           placeholder="친구 추가할 아이디를 입력하세요"
           value={formData.friendName}
           onChange={handleChange}
         />
-        {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-        {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-        <button type="button" onClick={validate}>
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
+        <button className="add-friend-button" type="button" onClick={validate}>
           친구 추가
         </button>
       </section>

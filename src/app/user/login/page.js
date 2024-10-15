@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import "../../../../public/css/login.css";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
@@ -42,7 +43,7 @@ const LoginPage = () => {
   // 로그인 성공 시 토큰을 받아옵니다
 
   return (
-    <section>
+    <section className="login-form">
       <h1>Login</h1>
       <input
         id="login_id"

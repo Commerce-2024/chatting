@@ -1,4 +1,5 @@
 "use client";
+import "../../../../public/css/roomChat.css";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -47,14 +48,15 @@ const RoomListPage = () => {
   };
 
   return (
-    <div>
-      <h1>Room List Page</h1>
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      <ul>
+    <div className="room-list-container">
+      <h1 className="room-list-title">Room List Page</h1>
+      {successMessage && <p className="success-message">{successMessage}</p>}
+      {errorMessage && <p className="error-message">{errorMessage}</p>}
+      <ul className="room-list">
         {rooms.map((room) => (
-          <li key={room.room_no}>
+          <li key={room.room_no} className="room-item">
             <button
+              className="join-button"
               onClick={() => handleRoomClick(room.room_no, session.user.id)}
             >
               참가

@@ -1,4 +1,5 @@
 "use client";
+import "../../../../public/css/chat.css";
 import React from "react";
 import { useState, useRef, useEffect } from "react";
 import { io } from "socket.io-client";
@@ -54,15 +55,20 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="card">
+    <div className="chat-card">
       <h1>Messenger</h1>
-      <Link href="/room/create">채팅방만들러가기</Link>
+      <Link href="/room/create" className="link-button">
+        채팅방 만들러가기
+      </Link>
       <br />
-      <Link href="/room/list">채팅방목록보러가기</Link>
-      <form onSubmit={onMessageSubmit}>
+      <Link href="/room/list" className="link-button">
+        채팅방 목록 보러가기
+      </Link>
+      <form onSubmit={onMessageSubmit} className="chat-form">
         <div>
           <TextField
             name="name"
+            className="text-field"
             value={(state.name = session.user.name)}
             label="Name"
           />
@@ -75,9 +81,10 @@ const ChatPage = () => {
             id="outlined-multiline-static"
             variant="outlined"
             label="Message"
+            className="text-field"
           />
         </div>
-        <button>Send Message</button>
+        <button className="send-button">Send Message</button>
       </form>
       <div>
         <h1>Chat Log</h1>
