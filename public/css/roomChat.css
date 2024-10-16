@@ -53,3 +53,29 @@
 .join-button:hover {
   background-color: #45a049;
 }
+
+/* 채팅 로그 컨테이너 스타일 */
+.chat-log-container {
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+/* 스크롤바 스타일 (선택 사항) */
+.chat-log-container::-webkit-scrollbar {
+  width: 10px;
+}
+
+.chat-log-container::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 5px;
+}
+
+.chat-log-container ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chat-log-container li {
+  margin-bottom: 10px;
+}

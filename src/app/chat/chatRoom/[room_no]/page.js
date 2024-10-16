@@ -2,25 +2,35 @@
 import "../../../../../public/css/roomChat.css";
 import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
-import { useParams, useRouter } from "next/navigation"; // useParams 사용
+import { useParams, useRouter } from "next/navigation";
 import { TextField } from "@material-ui/core";
 import { useSession } from "next-auth/react";
 
 const ChatRoomPage = () => {
-  const { room_no } = useParams(); // useParams로 room_no 가져옴
-  const [errorMessage, setErrorMessage] = useState(""); //에러메세지
-  const [roomData, setRoomData] = useState(null); //방정보
-  const [state, setState] = useState({ name: "", message_body: "" }); //message정보저장
-  const [chat, setChat] = useState([]); // chat 상태를 저장
-  const { data: session } = useSession(); //로그인세션
-  const socketRef = useRef(); //ref
-  //---------작동----
+  const { room_no } = useParams();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [roomData, setRoomData] = useState(null);
+  const [state, setState] = useState({ name: "", message: "" }); // message_body -> message
+  const [chat, setChat] = useState([]);
+  const { data: session } = useSession();
+  const socketRef = useRef();
+  const router = useRouter();
+
+  const user = session?.user || {};
+
   useEffect(() => {
-    socketRef.current = io.connect("http://localhost:4000"); //서버연결
-    socketRef.current.on("message", ({ name, message_body }) => {
-      //user_id,room_id,message_body,message_type
-      setChat([...chat, { name, message_body }]); //name과 message를 받아와 chat 상태에 추가하여 채팅 로그를 업데이트
+    if (session?.user?.name) {
+      setState((prev) => ({ ...prev, name: session.user.name }));
+    }
+  }, [session]);
+
+  useEffect(() => {
+    socketRef.current = io.connect("http://localhost:4000");
+    socketRef.current.on("message", ({ name, message }) => {
+      console.log("받은 메시지:", { name, message });
+      setChat((prevChat) => [...prevChat, { name, message }]);
     });
+
     if (room_no) {
       const fetchRoomData = async () => {
         try {
@@ -41,9 +51,9 @@ const ChatRoomPage = () => {
       };
       fetchRoomData();
     }
+
     return () => socketRef.current.disconnect();
-  }, [chat]); //연결종료
-  console.log("roomData", roomData);
+  }, [room_no]);
 
   if (errorMessage) {
     return <div>{errorMessage}</div>;
@@ -52,28 +62,28 @@ const ChatRoomPage = () => {
   if (!roomData) {
     return <div>Loading...</div>;
   }
-  //텍스트 입력처리
+
   const onTextChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
-  //메시지 전송 처리
+
   const onMessageSubmit = (e) => {
-    const { name, message_body } = state;
-    socketRef.current.emit("message", { name, message_body });
-    e.preventDefault(); //폼의 기본 제출 동작을 막아 페이지 새로고침 방지
-    setState({ message_body: "", name }); //메시지 입력 필드와 이름 필드 초기화
-    console.log("메세지", state);
+    const { name, message } = state;
+    socketRef.current.emit("message", { name, message });
+    e.preventDefault();
+    setState({ message: "", name });
   };
-  //-------------채팅 로그 렌더링---------------
+
   const renderChat = () => {
-    return chat.map(({ name, message_body }, index) => (
+    return chat.map(({ name, message }, index) => (
       <div key={index}>
         <h3>
-          {name}: <span>{message_body}</span>
+          {name}: <span>{message}</span>
         </h3>
       </div>
     ));
   };
+
   return (
     <div className="room-container">
       <p className="participant-count">참가 인원: {roomData.user_id}</p>
@@ -82,15 +92,16 @@ const ChatRoomPage = () => {
           <TextField
             name="name"
             className="text-field"
-            value={(state.name = session.user.name)}
+            value={user.name}
             label="Name"
+            disabled
           />
         </div>
         <div>
           <TextField
-            name="message_body"
-            onChange={(e) => onTextChange(e)}
-            value={state.message_body}
+            name="message"
+            onChange={onTextChange}
+            value={state.message}
             id="outlined-multiline-static"
             variant="outlined"
             label="Message"
@@ -99,10 +110,10 @@ const ChatRoomPage = () => {
         </div>
         <button className="send-button">Send Message</button>
       </form>
-      <div>
+      <div className="chat-log-container">
         <h1 className="chat-log-title">Chat Log</h1>
         <ul>
-          {roomData.map((message) => (
+          {roomData?.chat_log?.map((message) => (
             <li key={message.message_no} className="message-log">
               {message.user_id},{message.message_body}
             </li>
@@ -110,7 +121,7 @@ const ChatRoomPage = () => {
         </ul>
         {renderChat()}
       </div>
-      <button className="back-button" onClick={() => router.push("/chat")}>
+      <button className="back-button" onClick={() => router.push("/home")}>
         뒤로가기
       </button>
     </div>
