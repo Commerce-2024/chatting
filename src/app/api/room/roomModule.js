@@ -38,7 +38,31 @@ export async function getRooms(request) {
     );
   }
 }
-// 방 참가 클릭 함수
+// 방 목록 조회 아이디에 따라
+export async function getRoomById(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const user_id = searchParams.get("user_id");
+
+    // tbl_room_join과 tbl_room을 조인해서 방 정보를 가져옴
+    const myRooms = await prisma.tbl_room_join.findMany({
+      where: {
+        user_id: user_id,
+      },
+      include: {
+        tbl_room: true, // tbl_room_join과 연결된 room 정보를 포함
+      },
+    });
+
+    return NextResponse.json(myRooms);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "방목록을 불러오는 중 오류", error },
+      { status: 500 }
+    );
+  }
+}
+// 방 참가 함수
 export async function joinRoom(request) {
   // POST 요청 처리
   const { searchParams } = new URL(request.url);
@@ -60,8 +84,20 @@ export async function joinRoom(request) {
         { status: 404 }
       );
     }
-
+    const existingJoin = await prisma.tbl_room_join.findFirst({
+      where: {
+        room_id: Number(room_no),
+        user_id: user_id,
+      },
+    });
+    if (existingJoin) {
+      return NextResponse.json(
+        { message: "이미 참가한 방입니다." },
+        { status: 400 } //Bad Request
+      );
+    }
     // 방 참가 정보 저장
+
     await prisma.tbl_room_join.create({
       data: {
         room_id: Number(room_no), // room_no를 room_id로 사용
@@ -112,4 +148,11 @@ export async function chatRog(request) {
       { status: 500 }
     );
   }
+}
+//채팅방 이름조회 해야됨
+export async function getRoomName(request) {
+  const { searchParams } = new URL(request.url);
+  const room_no = searchParams.get("room_no");
+  try {
+  } catch (error) {}
 }
