@@ -2,13 +2,13 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Link from "next/link"; // 방으로 이동할 수 있는 링크 생성에 사용
+import { useRouter } from "next/router";
 
 const UserInfoPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [rooms, setRooms] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const id = session.user.id;
-
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -22,13 +22,13 @@ const UserInfoPage = () => {
       }
     };
     fetchRooms();
-  }, [id]);
+  }, [status, id]);
 
   return (
     <>
       <h1>{session.user.name}님의 정보</h1>
       {errorMessage && <p className="error-message">{errorMessage}</p>}
-
+      <h3>내 채팅방</h3>
       <ul>
         {rooms.length > 0 ? (
           rooms.map((room) => (

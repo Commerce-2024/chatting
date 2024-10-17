@@ -1,10 +1,11 @@
 "use client";
 import "../../public/css/nav.css";
 import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 import Link from "next/link";
 
 const Nav = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   return (
     <nav className="nav-container">
       <ul>
@@ -13,7 +14,7 @@ const Nav = () => {
         </li>
         <li>
           {session ? (
-            <Link href="#" onClick={() => signOut()}>
+            <Link href="/api/auth/signin" onClick={() => signOut()}>
               로그아웃
             </Link>
           ) : (

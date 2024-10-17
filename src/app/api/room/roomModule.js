@@ -108,7 +108,7 @@ export async function joinRoom(request) {
       data: {
         user_id: user_id,
         room_id: Number(room_no),
-        message_body: "시작", //일단 처음메세지
+        message_body: user_id + "님이 방에참가하셨습니다", //일단 처음메세지
         message_type: "1", //type은 나중에 설정
       },
     }); //여기 message 초기 메세지를 삽입
@@ -135,6 +135,9 @@ export async function chatRog(request) {
       where: {
         room_id: Number(room_no), //room_id임 이테이블은
       },
+      include: {
+        tbl_user: true,
+      },
     });
     if (chatRog.message_body === "") {
       {
@@ -149,10 +152,26 @@ export async function chatRog(request) {
     );
   }
 }
-//채팅방 이름조회 해야됨
-export async function getRoomName(request) {
+//채팅방 채팅저장
+export async function chat(request) {
   const { searchParams } = new URL(request.url);
-  const room_no = searchParams.get("room_no");
+  const id = searchParams.get("id");
+  const message = searchParams.get("message");
+  const room_id = searchParams.get("room_id");
   try {
-  } catch (error) {}
+    const chat = await prisma.tbl_message.create({
+      data: {
+        user_id: id,
+        room_id: Number(room_id),
+        message_body: message,
+        message_type: "2",
+      },
+    });
+    if (message === "") {
+      return NextResponse.json({ message: "내용을 입력하세요" });
+    }
+    return NextResponse.json({ success: true, message: "메시지 전송 성공" });
+  } catch (error) {
+    return NextResponse.json({ message: "메세지 전송중 에러" });
+  }
 }

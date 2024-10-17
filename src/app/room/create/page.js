@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-
+import "../../../../public/css/roomCreate.css";
 const CreateRoomPage = () => {
   const [formData, setFormData] = useState({
     title: "",
@@ -54,9 +54,11 @@ const CreateRoomPage = () => {
   };
 
   return (
-    <div>
-      <h1>Create Room Page</h1>
+    <div className="room-create-container">
+      <h1 className="room-create-title">Create Room Page</h1>
+      <p>제목</p>
       <input
+        className="room-name"
         id="room_name"
         name="title"
         placeholder="제목을 입력하세요"
@@ -64,16 +66,22 @@ const CreateRoomPage = () => {
         value={formData.title}
         onChange={handleChange}
       />
-      <select name="status" value={formData.status} onChange={handleChange}>
+      <p>옵션</p>
+      <select
+        className="room-select"
+        name="status"
+        value={formData.status}
+        onChange={handleChange}
+      >
         <option value="">옵션 선택</option>
         <option value="personal">메모</option>
         <option value="public">메신저</option>
       </select>
-      <button type="button" onClick={validate}>
+      <button className="create-button" type="button" onClick={validate}>
         생성
       </button>
-      {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-      {successMessage && <p style={{ color: "green" }}>{successMessage}</p>}
+      {errorMessage && <p className="success-message">{errorMessage}</p>}
+      {successMessage && <p className="error-message">{successMessage}</p>}
     </div>
   );
 };
