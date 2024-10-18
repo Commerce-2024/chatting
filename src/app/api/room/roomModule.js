@@ -152,13 +152,14 @@ export async function chatRog(request) {
     );
   }
 }
-//채팅방 채팅저장
-export async function chat(request) {
+export async function chat(request, socket) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get("id");
   const message = searchParams.get("message");
   const room_id = searchParams.get("room_id");
+
   try {
+    // 메시지 저장
     const chat = await prisma.tbl_message.create({
       data: {
         user_id: id,
@@ -167,9 +168,18 @@ export async function chat(request) {
         message_type: "2",
       },
     });
+
     if (message === "") {
       return NextResponse.json({ message: "내용을 입력하세요" });
     }
+
+    // 저장 후 실시간으로 해당 방의 사용자에게 메시지 전송
+    io.to(room_id).emit("message", {
+      room_id,
+      user_id: id,
+      message_body: message,
+    });
+
     return NextResponse.json({ success: true, message: "메시지 전송 성공" });
   } catch (error) {
     return NextResponse.json({ message: "메세지 전송중 에러" });

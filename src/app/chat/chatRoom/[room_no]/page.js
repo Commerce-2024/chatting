@@ -5,16 +5,16 @@ import { io } from "socket.io-client";
 import { useParams, useRouter } from "next/navigation";
 import { TextField } from "@material-ui/core";
 import { useSession } from "next-auth/react";
-
+const socket = io.connect("http://localhost:4000");
 const ChatRoomPage = () => {
   const { room_no } = useParams(); // 방 번호 파라미터로 가져옴
-  const [errorMessage, setErrorMessage] = useState("");
-  const [roomData, setRoomData] = useState(null);
-  const [state, setState] = useState({ name: "", message: "" });
-  const [chat, setChat] = useState([]);
-  const { data: session } = useSession();
+  const { data: session } = useSession(); //유저 세션
+  const [errorMessage, setErrorMessage] = useState(""); //에러메세지
+  const [roomData, setRoomData] = useState(null); //방데이터 챗로그,유저정보
+  const [state, setState] = useState({ name: "", message: "" }); //메세지 스테이트
+  const [chat, setChat] = useState([]); //챗정보
   const socketRef = useRef(); // 소켓을 저장할 ref
-  const router = useRouter();
+  const router = useRouter(); //라우터
 
   const user = session?.user || {};
 
@@ -65,8 +65,6 @@ const ChatRoomPage = () => {
       socketRef.current.disconnect();
     };
   }, [room_no]);
-
-  console.log("병신", roomData);
   if (errorMessage) {
     return <div>{errorMessage}</div>;
   }
@@ -74,11 +72,11 @@ const ChatRoomPage = () => {
   if (!roomData) {
     return <div>Loading...</div>;
   }
-
+  //----------------텍스트 입력처리-----------------------
   const onTextChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
-
+  //----------------메시지 전송처리--------------------------------------
   const onMessageSubmit = async (e) => {
     e.preventDefault();
 
@@ -86,7 +84,7 @@ const ChatRoomPage = () => {
     const id = session.user.id;
 
     // **1. 메시지를 먼저 클라이언트에 반영 (내가 보낸 메시지 바로 보이게)**
-    setChat((prevChat) => [...prevChat, { name, message }]);
+    setChat((prevChat) => [...prevChat, { room_no, name, message }]);
 
     // 소켓으로 메시지 전송
     socketRef.current.emit("sendMessage", { room_no, name, message });
@@ -116,7 +114,7 @@ const ChatRoomPage = () => {
     setState({ message: "", name }); // 메시지 초기화
   };
 
-  // 채팅 로그 렌더링
+  //--------- 채팅 로그 렌더링---------------------------
   const renderChat = () => {
     return chat.map(({ name, message }, index) => (
       <div key={index}>
@@ -162,7 +160,7 @@ const ChatRoomPage = () => {
         <ul>
           {roomData.map((message) => (
             <li key={message.message_no} className="message-log">
-              {message.user_id}: {message.message_body}
+              {message.tbl_user.user_name}: {message.message_body}
             </li>
           ))}
         </ul>
