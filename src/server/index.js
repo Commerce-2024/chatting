@@ -20,10 +20,10 @@ io.on("connection", (socket) => {
   }); // 메시지를 특정 방에 있는 사용자에게 전송
 
   socket.on("sendMessage", ({ room_no, name, message }) => {
-    io.to(room_no).emit("receiveMessage", { name, message });
+    socket.broadcast.to(room_no).emit("receiveMessage", { name, message });
 
     console.log(`방 ${room_no}에 메시지: ${message}`);
-  }); // 방 나가기
+  });
 
   socket.on("leaveRoom", (room_no) => {
     socket.leave(room_no);
