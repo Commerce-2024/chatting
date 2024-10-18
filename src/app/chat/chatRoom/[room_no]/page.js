@@ -12,7 +12,7 @@ const ChatRoomPage = () => {
   const [errorMessage, setErrorMessage] = useState(""); //에러메세지
   const [roomData, setRoomData] = useState(null); //방데이터 챗로그,유저정보
   const [state, setState] = useState({ name: "", message: "" }); //메세지 스테이트
-  const [chat, setChat] = useState([]); //챗정보
+  const [chat, setChat] = useState([]); //챗 정보
   const socketRef = useRef(); // 소켓을 저장할 ref
   const router = useRouter(); //라우터
 
