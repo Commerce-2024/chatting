@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 const socket = io.connect("http://localhost:4000");
 const ChatRoomPage = () => {
   const { room_no } = useParams(); // 방 번호 파라미터로 가져옴
-  const { data: session } = useSession(); //유저 세션
+  const { data: session, status } = useSession(); //유저 세션
   const [errorMessage, setErrorMessage] = useState(""); //에러메세지
   const [roomData, setRoomData] = useState(null); //방데이터 챗로그,유저정보
   const [state, setState] = useState({ name: "", message: "" }); //메세지 스테이트
@@ -17,7 +17,6 @@ const ChatRoomPage = () => {
   const router = useRouter(); //라우터
 
   const user = session?.user || {};
-
   // 세션 정보가 변경될 때 이름 상태 업데이트
   useEffect(() => {
     if (session?.user?.name) {
@@ -72,7 +71,7 @@ const ChatRoomPage = () => {
   if (!roomData) {
     return <div>Loading...</div>;
   }
-  //----------------텍스트 입력처리-----------------------
+  //----------------텍스트 입력처리--------------------------------------
   const onTextChange = (e) => {
     setState({ ...state, [e.target.name]: e.target.value });
   };
@@ -126,50 +125,63 @@ const ChatRoomPage = () => {
   };
 
   return (
-    <div className="room-container">
-      <ul>
-        {roomData.map((user) => (
-          <li key={user.user_no}>{user.user_name}</li>
-        ))}
-      </ul>
-      <form onSubmit={onMessageSubmit} className="message-form">
-        <div>
-          <TextField
-            name="name"
-            className="text-field"
-            value={user.name || ""}
-            label="Name"
-            disabled
-          />
+    <>
+      {status === "loading" ? (
+        <div>로딩중</div>
+      ) : session && session.user ? (
+        <div className="room-container">
+          <ul>
+            {roomData.map((user) => (
+              <li key={user.user_no}>{user.user_name}</li>
+            ))}
+          </ul>
+          <h1 className="chat-log-title">Chat Log</h1>
+          <div className="chat-log-container">
+            <ul>
+              {roomData.map((message) => (
+                <li key={message.message_no} className="message-log">
+                  {message.tbl_user.user_name}: {message.message_body}
+                </li>
+              ))}
+            </ul>
+            {renderChat()}
+          </div>
+          <form onSubmit={onMessageSubmit} className="message-form">
+            <div>
+              <TextField
+                name="name"
+                className="text-field"
+                value={user.name || ""}
+                disabled
+              />
+            </div>
+            <div>
+              <TextField
+                name="message"
+                onChange={onTextChange}
+                value={state.message}
+                id="outlined-multiline-static"
+                variant="outlined"
+                label="Message"
+                className="text-field"
+              />
+            </div>
+            <button className="send-button">Send Message</button>
+          </form>
+          <button className="back-button" onClick={() => router.push("/")}>
+            뒤로가기
+          </button>
+          <div>
+            <p>친구 초대하기</p>
+          </div>
         </div>
-        <div>
-          <TextField
-            name="message"
-            onChange={onTextChange}
-            value={state.message}
-            id="outlined-multiline-static"
-            variant="outlined"
-            label="Message"
-            className="text-field"
-          />
-        </div>
-        <button className="send-button">Send Message</button>
-      </form>
-      <div className="chat-log-container">
-        <h1 className="chat-log-title">Chat Log</h1>
-        <ul>
-          {roomData.map((message) => (
-            <li key={message.message_no} className="message-log">
-              {message.tbl_user.user_name}: {message.message_body}
-            </li>
-          ))}
-        </ul>
-        {renderChat()}
-      </div>
-      <button className="back-button" onClick={() => router.push("/home")}>
-        뒤로가기
-      </button>
-    </div>
+      ) : (
+        <>
+          <p>로그인이 필요합니다</p>
+          <Link href="/user/login">로그인페이지로 이동</Link>
+        </>
+      )}
+    </>
   );
 };
 

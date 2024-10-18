@@ -7,7 +7,7 @@ const RoomListPage = () => {
   const [rooms, setRooms] = useState([]);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter(); // useRouter를 함수로 호출
 
   useEffect(() => {
@@ -48,24 +48,37 @@ const RoomListPage = () => {
   };
 
   return (
-    <div className="room-list-container">
-      <h1 className="room-list-title">Room List Page</h1>
-      {successMessage && <p className="success-message">{successMessage}</p>}
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-      <ul className="room-list">
-        {rooms.map((room) => (
-          <li key={room.room_no} className="room-item">
-            <button
-              className="join-button"
-              onClick={() => handleRoomClick(room.room_no, session.user.id)}
-            >
-              참가
-            </button>
-            {room.room_name} ({room.room_status})
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      {status === "loading" ? (
+        <div>로딩중</div>
+      ) : session && session.user ? (
+        <div className="room-list-container">
+          <h1 className="room-list-title">Room List Page</h1>
+          {successMessage && (
+            <p className="success-message">{successMessage}</p>
+          )}
+          {errorMessage && <p className="error-message">{errorMessage}</p>}
+          <ul className="room-list">
+            {rooms.map((room) => (
+              <li key={room.room_no} className="room-item">
+                <button
+                  className="join-button"
+                  onClick={() => handleRoomClick(room.room_no, session.user.id)}
+                >
+                  참가
+                </button>
+                {room.room_name} ({room.room_status})
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <>
+          <p>로그인이 필요합니다</p>
+          <Link href="/user/login">로그인페이지로 이동</Link>
+        </>
+      )}
+    </>
   );
 };
 

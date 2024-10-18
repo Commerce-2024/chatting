@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 const socket = io.connect("http://localhost:4000"); //서버 연결
 const ChatPage = () => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [state, setState] = useState({ message: "", name: "" }); //useState 훅을 사용하여 message와 name 상태를 관리
   const [chat, setChat] = useState([]); //chat 상태를 사용하여 채팅 로그를 저장하고, 새로운 메시지가 도착할 때마다 setChat을 통해 로그를 업데이트
 
@@ -55,42 +55,53 @@ const ChatPage = () => {
   };
 
   return (
-    <div className="chat-card">
-      <h1>Messenger</h1>
-      <Link href="/room/create" className="link-button">
-        채팅방 만들러가기
-      </Link>
-      <br />
-      <Link href="/room/list" className="link-button">
-        채팅방 목록 보러가기
-      </Link>
-      <form onSubmit={onMessageSubmit} className="chat-form">
-        <div>
-          <TextField
-            name="name"
-            className="text-field"
-            value={(state.name = session.user.name)}
-            label="Name"
-          />
+    <>
+      {status === "loading" ? (
+        <div>로딩중</div>
+      ) : session && session.user ? (
+        <div className="chat-card">
+          <h1>Messenger</h1>
+          <Link href="/room/create" className="link-button">
+            채팅방 만들러가기
+          </Link>
+          <br />
+          <Link href="/room/list" className="link-button">
+            채팅방 목록 보러가기
+          </Link>
+          <form onSubmit={onMessageSubmit} className="chat-form">
+            <div>
+              <TextField
+                name="name"
+                className="text-field"
+                value={(state.name = session.user.name)}
+                label="Name"
+              />
+            </div>
+            <div>
+              <TextField
+                name="message"
+                onChange={(e) => onTextChange(e)}
+                value={state.message}
+                id="outlined-multiline-static"
+                variant="outlined"
+                label="Message"
+                className="text-field"
+              />
+            </div>
+            <button className="send-button">Send Message</button>
+          </form>
+          <div>
+            <h1>Chat Log</h1>
+            {renderChat()}
+          </div>
         </div>
-        <div>
-          <TextField
-            name="message"
-            onChange={(e) => onTextChange(e)}
-            value={state.message}
-            id="outlined-multiline-static"
-            variant="outlined"
-            label="Message"
-            className="text-field"
-          />
-        </div>
-        <button className="send-button">Send Message</button>
-      </form>
-      <div>
-        <h1>Chat Log</h1>
-        {renderChat()}
-      </div>
-    </div>
+      ) : (
+        <>
+          <p>로그인이 필요합니다</p>
+          <Link href="/user/login">로그인페이지로 이동</Link>
+        </>
+      )}
+    </>
   );
 };
 export default ChatPage;

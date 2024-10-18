@@ -3,8 +3,11 @@ import Link from "next/link";
 const HomePage = () => {
   return (
     <>
-      <h1>home</h1>
-      <p></p>
+      <header>
+        <h1>Home</h1>
+        <p>Chatting 채팅프로젝트</p>
+      </header>
+      <footer>xkdns50@naver.com</footer>
     </>
   );
 };

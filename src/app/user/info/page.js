@@ -8,7 +8,7 @@ const UserInfoPage = () => {
   const { data: session, status } = useSession();
   const [rooms, setRooms] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
-  const id = session.user.id;
+  const id = session?.user?.id;
   useEffect(() => {
     const fetchRooms = async () => {
       try {
@@ -26,23 +26,32 @@ const UserInfoPage = () => {
 
   return (
     <>
-      <h1>{session.user.name}님의 정보</h1>
-      {errorMessage && <p className="error-message">{errorMessage}</p>}
-      <h3>내 채팅방</h3>
-      <ul>
-        {rooms.length > 0 ? (
-          rooms.map((room) => (
-            <li key={room.room_id}>
-              {/* 조인된 tbl_room 필드에서 방 제목을 표시 */}
-              <Link href={`/chat/chatRoom/${room.tbl_room.room_no}`}>
-                {room.tbl_room.room_name} {/* 방 제목 표시 */}
-              </Link>
-            </li>
-          ))
-        ) : (
-          <p>참여한 방이 없습니다.</p>
-        )}
-      </ul>
+      {status === "loading" ? (
+        <div>로딩중</div>
+      ) : session && session.user ? (
+        <>
+          <h3>{session.user.name}의 채팅방</h3>
+          {errorMessage && <p className="error-message">{errorMessage}</p>}{" "}
+          <ul>
+            {rooms.length > 0 ? (
+              rooms.map((room) => (
+                <li key={room.room_id}>
+                  <Link href={`/chat/chatRoom/${room.tbl_room.room_no}`}>
+                    {room.tbl_room.room_name}
+                  </Link>
+                </li>
+              ))
+            ) : (
+              <p>참여한 방이 없습니다.</p>
+            )}
+          </ul>
+        </>
+      ) : (
+        <>
+          <p>로그인이 필요합니다</p>
+          <Link href="/user/login">로그인페이지로 이동</Link>
+        </>
+      )}
     </>
   );
 };
